@@ -5,13 +5,18 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.ajd.fractalate.FracConstants;
+import org.ajd.fractalate.world.elements.ActiveTile;
+import org.ajd.fractalate.world.elements.BackgroundTile;
+import org.ajd.fractalate.world.elements.BaseTile;
 import org.ajd.fractalate.world.elements.Tile;
 import org.ajd.fractalate.world.util.Coordinate;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public class World implements Renderable {
-	private List<Tile> tiles;
+	private List<BaseTile> tiles;
+	private List<BackgroundTile> backgroundTiles;
 	
 	private int xSize = (int) ((FracConstants.MAX_X - FracConstants.MIN_X) + 1);
 	private int ySize = (int) ((FracConstants.MAX_Y - FracConstants.MIN_Y) + 1);
@@ -24,6 +29,8 @@ public class World implements Renderable {
 		
 		RandomHolder.initRandom(seed);
 		
+		buildBackgroundTiles();
+		
 		calcHeightMapBuildTiles(difficulty, FracConstants.BASE_COMPLEXITY);
 	}
 	
@@ -32,22 +39,52 @@ public class World implements Renderable {
 	}
 	
 	
-	private void buildTiles(double[][] heightArray, PatchInfoRec[][] colArray) {
+	private void buildTiles(double[][] heightArray, PatchInfoRec[][] colArray, double difficulty) {
 		
 		// Create all tiles - start from the bottom, so ArrayList ordering should(!) give us free z buffering
-		// And here we build the list of tiles from the bottom up, so we don;t need to worry about Z buffering later
+		// And here we build the list of tiles from the bottom up, so we don't need to worry about Z buffering later
 		tiles = new ArrayList<>();
+		List<ActiveTile> tempActiveTiles1 = new ArrayList<>();
+		List<ActiveTile> tempActiveTiles2 = new ArrayList<>();
 		for(int h = 1; h<=FracConstants.NUM_LAYERS; h++) {
 			for(int i=0; i<xSize; i++) {
 				for(int j=0; j<ySize; j++) {
 					if(heightArray[i][j] > h) {
 						tiles.add( new Tile(i-(long)(xSize/2), j, h, heightArray[i][j], colArray[i][j]));
+						if(heightArray[i][j] < (h+1) && heightArray[i][j] <= FracConstants.GROUND_LEVEL_LAYER) {
+							// This is the 'top' of a stack
+							if(RandomHolder.getRandom().nextDouble() < (FracConstants.ACTIVE_TILE_FREQ*difficulty)) {
+								tempActiveTiles1.add(new ActiveTile(i-(long)(xSize/2), j, h, new ActiveEntityRec(difficulty)));
+							}							
+						}
 					}
 				}
 			}
+			tempActiveTiles2.forEach(ta -> tiles.add(ta));
+			tempActiveTiles2 = tempActiveTiles1;
+			tempActiveTiles1 = new ArrayList<>();	
 		}
 		
 	}
+	
+	private void buildBackgroundTiles() {
+		
+		// Create background tiles
+		backgroundTiles = new ArrayList<>();
+		for(int j=0; j<ySize; j++) {
+			int colIdx1 = RandomHolder.getRandom().nextInt(FracConstants.NUM_RAINBOW_COLOURS);
+			Color col1 = new Color(FracConstants.RAINBOWCOLOURS[colIdx1][0],FracConstants.RAINBOWCOLOURS[colIdx1][1],FracConstants.RAINBOWCOLOURS[colIdx1][2], 1.0d);
+			int colIdx2 = RandomHolder.getRandom().nextInt(FracConstants.NUM_RAINBOW_COLOURS);
+			while(colIdx1 != colIdx2) {
+				colIdx2 = RandomHolder.getRandom().nextInt(FracConstants.NUM_RAINBOW_COLOURS);
+			}
+			Color col2 = new Color(FracConstants.RAINBOWCOLOURS[colIdx2][0],FracConstants.RAINBOWCOLOURS[colIdx2][1],FracConstants.RAINBOWCOLOURS[colIdx2][2], 1.0d);
+			for(int i=0; i<xSize; i++) {
+				backgroundTiles.add( new BackgroundTile(i-(long)(xSize/2), j, col1, col2));
+			}
+		}
+	}
+		
 	
 
 	private void calcHeightMapBuildTiles(double diff, double complex) {
@@ -58,7 +95,7 @@ public class World implements Renderable {
 
 		// Pick random points to be random heights - height weighting is down to difficulty level.
 		// calculate which of the values are to be heights and set the anchor point height
-		double[] randVals = RandomHolder.getRandom().doubles().limit((long)xSize*ySize).map(d -> d < complex ? ((d * rescale) -  FracConstants.NUM_LAYERS) : -100.0d).toArray();
+		double[] randVals = RandomHolder.getRandom().doubles().limit((long)xSize*ySize).map(d -> d < complex ? ((d * rescale) -  FracConstants.NUM_LAYERS + diff) : -100.0d).toArray();
 		
 		
 		// Assign heightmap. A 2D array is appropriate here because we know the size and the array matches the 2D overhead view of the world.
@@ -71,7 +108,7 @@ public class World implements Renderable {
 				if (randVals[rpos] >= -99.0d) {
 					anchorPoints[i][j] = true;
 					heightArray[i][j] = randVals[rpos];
-					colArray[i][j] = new PatchInfoRec(randVals[rpos]/FracConstants.NUM_LAYERS);
+					colArray[i][j] = new PatchInfoRec((randVals[rpos] + FracConstants.NUM_LAYERS)/FracConstants.NUM_LAYERS);
 				}
 				else {
 					anchorPoints[i][j] = false;
@@ -90,7 +127,7 @@ public class World implements Renderable {
 			}
 		}
 
-		buildTiles(heightArray, colArray);
+		buildTiles(heightArray, colArray, diff);
 	}
 	
 	private PatchInfoRec getClosestColour(int x, int y, boolean[][] anchorPoints, PatchInfoRec[][] colArray) {
@@ -171,7 +208,14 @@ public class World implements Renderable {
 	public void render(GraphicsContext gc) {
 		gc.clearRect(worldScale, ySize, xSize, worldScale);
 		
+		backgroundTiles.forEach(t -> t.render(gc, worldScale, myCoord));		
 		tiles.forEach(t -> t.render(gc, worldScale, myCoord));		
+	}
+
+	@Override
+	public void update(long timeStepNS) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

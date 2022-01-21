@@ -11,15 +11,34 @@ import org.ajd.fractalate.world.util.PointsAsArrays;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Stop;
 
 public class Shape implements Renderable {
 
+	private List<Point2D> initialPoints;
+	
 	private List<Point2D> points;
 	private PointsAsArrays paa;
-	private Color col;
+	
+	public List<Stop> getColGradStops() {
+		return colGradStops;
+	}
+
+	public Color getFirstCol() {
+		return firstCol;
+	}
+
+	public boolean isGradient() {
+		return isGradient;
+	}
+
+	private List<Stop> colGradStops;
+	private Color firstCol;
 	private Color highlightCol;
 	private boolean isHighlight;
 	private double scale;
+	private boolean isGradient; 
+	private boolean isRotateable;
 
 	private Coordinate renderCoord = new Coordinate(0.0d, 0.0d, 0.0d);
 	
@@ -27,17 +46,56 @@ public class Shape implements Renderable {
 	
 	private static final double DEGREES_TO_RADS = 57.295779513d;
 	
-	public Shape(int numSides, double scale, double initialRotation, Point2D origin, Color colour, boolean isHighlight, Renderer r) {
-		createShape(numSides, scale, initialRotation, origin);
+	
+	public Shape(int numSides, double scale, double initialRotation, Point2D origin, List<Color> colours, boolean isHighlight, Renderer r) {
+		this(numSides, scale, initialRotation, origin, colours, isHighlight, r, null); 
+	}
+	
+	public Shape(int numSides, double scale, double initialRotation, Point2D origin, List<Color> colours, boolean isHighlight, Renderer r, List<Point2D> definedPoints) {
+		if(definedPoints == null) {
+			createShape(numSides, scale, initialRotation, origin);
+		}
+		else {
+			this.points = definedPoints.stream().map(p->new Point2D(p.getX()*scale, p.getY()*scale)).toList();
+		}
 		
 		this.isHighlight = isHighlight;
 		this.scale = scale;
 		this.r=r;
+		this.isGradient = false;
+		isRotateable = false;
 		
-		col = colour;
-		highlightCol = col.brighter().brighter();
+		colGradStops = new ArrayList<>();
+		if(colours == null) {
+			highlightCol = Color.WHITE;		
+			firstCol = Color.GRAY;
+		}
+		else if (colours.size() > 1) {
+			this.isGradient = true;
+			highlightCol = colours.get(0).brighter().brighter();
+			firstCol = colours.get(0);
+			double pos = 0.0d;
+			double posStep = 1.0d/colours.size();
+			for(Color c: colours) {
+				colGradStops.add(new Stop(pos, c));
+				pos += posStep;
+			}
+		}
+		else {
+			highlightCol =  colours.get(0).brighter().brighter();
+			firstCol = colours.get(0);
+		}
+		
 	}
 
+	public Shape setAsRotateable() {
+		isRotateable = true;
+		
+		initialPoints = points;
+		
+		return this;
+	}
+	
 	private Point2D rotateBy(Point2D p, double degrees) {
 		double rads = degrees / DEGREES_TO_RADS;
 		double newX = (p.getX() * Math.cos(rads)) - (p.getY() * Math.sin(rads));
@@ -49,7 +107,6 @@ public class Shape implements Renderable {
 	//Create a shape according to the scale, centered on the origin.
 	public void createShape(int numsides, double scale, double initialRotation, Point2D origin) {
 		points =  new ArrayList<>(numsides);
-		
 		double sideAngle = initialRotation;
 		double angleIncrement = 360.0d/numsides;
 		for(int i=0; i<numsides; i++ ) {
@@ -60,24 +117,28 @@ public class Shape implements Renderable {
 		this.paa = new PointsAsArrays(points);
 	}
 
+	
+	public void setRotation(double rotation) {
+		if(!isRotateable) {
+			throw new UnsupportedOperationException("Need to set a shape to be rotateable before rotating.");
+		}
+		points = initialPoints.stream().map(p->rotateBy(p, rotation)).toList();
+		paa = new PointsAsArrays(points);
+	}
+	
 	@Override
 	public void setCoord(Coordinate newCoord) {
 		renderCoord = newCoord;
-		
 	}
 
 	
 
 	@Override
-	public void render(GraphicsContext gc) {
-		
-		r.render(this, gc);
-		
+	public void render(GraphicsContext gc) {		
+		r.render(this, gc);		
 	}
 
-	public Color getCol() {
-		return col;
-	}
+
 
 	public Color getHighlightCol() {
 		return highlightCol;
@@ -101,6 +162,12 @@ public class Shape implements Renderable {
 	
 	public PointsAsArrays getPointsAsArrays() {
 		return paa;
+	}
+
+	@Override
+	public void update(long timeStepNS) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

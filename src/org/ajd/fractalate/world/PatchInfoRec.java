@@ -9,7 +9,7 @@ import org.ajd.fractalate.world.elements.builders.ColourSetBuilder;
 import org.ajd.fractalate.world.elements.builders.Renderer;
 import org.ajd.fractalate.world.elements.builders.ShapeBuilders;
 import org.ajd.fractalate.world.elements.builders.ShapeRenderers;
-import org.ajd.fractalate.world.elements.builders.ShapesBuilder;
+import org.ajd.fractalate.world.elements.builders.ShapeBuilder;
 
 
 // Contains information about a 'Patch' within the world, colours
@@ -21,17 +21,25 @@ public class PatchInfoRec {
 	private double green2 = 0.0d;
 	private double blue2  = 0.0d;
 	private int numcols = 6;
+	private int numsides = 6;
 	private double darken  = 1.0d; // 0.0...1.0
 	private int numIters = 2;
 	private TileStyle tStyle = TileStyle.CIRCLE_FLAIR;
-	private ShapesBuilder shapesBuilder;
+	private ShapeBuilder shapesBuilder;
 	private Renderer renderer;
 	private ColourSetBuilder colourBuilder;
 	
 	PatchInfoRec(double darken) {			
-		Random r = new Random();
+		Random r = RandomHolder.getRandom();
+		if(darken > 1.0d) {
+			darken = 1.0d;
+		}
+		if(darken < 0.4d) {
+			darken = 0.4d;
+		}
 
 		numcols = r.nextInt(FracConstants.MIN_COLOURS, FracConstants.MAX_COLOURS);
+		numsides = r.nextInt(FracConstants.MIN_SIDES, FracConstants.MAX_SIDES);
 		numIters = r.nextInt(FracConstants.MIN_ITERS, FracConstants.MAX_ITERS);
 		red1 = darken;
 		green1 = darken;
@@ -143,6 +151,10 @@ public class PatchInfoRec {
 		return numcols;
 	}
 
+	public int getNumsides() {
+		return numsides;
+	}
+
 	public void setNumcols(int numcols) {
 		this.numcols = numcols;
 	}
@@ -171,11 +183,11 @@ public class PatchInfoRec {
 		this.tStyle = tStyle;
 	}
 
-	public ShapesBuilder getShapesBuilder() {
+	public ShapeBuilder getShapesBuilder() {
 		return shapesBuilder;
 	}
 
-	public void setShapesBuilder(ShapesBuilder shapesBuilder) {
+	public void setShapesBuilder(ShapeBuilder shapesBuilder) {
 		this.shapesBuilder = shapesBuilder;
 	}
 

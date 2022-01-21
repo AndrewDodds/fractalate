@@ -44,12 +44,20 @@ public class MainAminationTimer extends AnimationTimer {
             xPos += t;
         }	 
     	
+        doUpdates((long)(currentNanoTime - prevtime) / 10000000);
+
         prevtime = currentNanoTime;
         yPos -= t;
+        
         
         drawTheScene();
     }
 	
+	private void doUpdates(long t) {
+        objectsToDraw.forEach((k, r) -> r.update(t));
+		
+	}
+
 	private void drawTheScene() {
 		Color bgColour = new Color(0.0d, 0.0d, 0.0d, 1.0d);
 		gc.setStroke(bgColour);

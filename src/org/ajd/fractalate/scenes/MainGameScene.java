@@ -15,9 +15,9 @@ public class MainGameScene extends Scene {
     private void addEventHandlers() {
 		// Add event handlers for the scene
 		// lambda event handlers are so much better..
-        this.setOnKeyPressed((e) -> currentinput.add(e.getCode().toString()));
+        this.setOnKeyPressed(e -> currentinput.add(e.getCode().toString()));
 
-	    this.setOnKeyReleased((e) -> currentinput.remove(e.getCode().toString()));
+	    this.setOnKeyReleased(e -> currentinput.remove(e.getCode().toString()));
     	
     }
     

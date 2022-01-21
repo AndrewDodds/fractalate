@@ -8,5 +8,5 @@ import javafx.scene.paint.Color;
 
 @FunctionalInterface
 public interface ColourSetBuilder {
-	List<Color> getColours(PatchInfoRec crec);
+	List<Color> getColours(PatchInfoRec crec, long depth);
 } 

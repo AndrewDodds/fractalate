@@ -8,12 +8,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class ScoreCard implements Renderable {
+public class Background implements Renderable {
 
 	private Point2D screenSize;
 	private Coordinate myCoord;
 	
-	public ScoreCard(Point2D theScreenSize)  {
+	public Background(Point2D theScreenSize)  {
 		screenSize = theScreenSize;
 	}
 

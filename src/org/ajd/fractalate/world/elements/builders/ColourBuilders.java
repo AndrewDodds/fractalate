@@ -3,6 +3,7 @@ package org.ajd.fractalate.world.elements.builders;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ajd.fractalate.FracConstants;
 import org.ajd.fractalate.world.PatchInfoRec;
 
 import javafx.scene.paint.Color;
@@ -23,75 +24,69 @@ public class ColourBuilders {
 		return num;
 			
 	}
+	
+	private static long depthIter(long levelNo) {
+		if(levelNo > FracConstants.GROUND_LEVEL_LAYER ) {
+			return 0;
+		}
+		
+		if(levelNo < 1) {
+			return 4;
+		}
+		
+		return (FracConstants.GROUND_LEVEL_LAYER + 1) - levelNo;
+	}
 
-	public static List<Color> getGradientColours(PatchInfoRec crec) {
+	public static List<Color> getGradientColours(PatchInfoRec crec, long depth) {
 		// create array of shaded colours to use, darken with distance.
 		List<Color> colourSet = new ArrayList<>();
+		
+		
+		Color c1 = new Color(checkLimits(crec.getRed1()), checkLimits(crec.getGreen1()), checkLimits(crec.getBlue1()), 1.0d);
+		Color c2 = new Color(checkLimits(crec.getRed2()), checkLimits(crec.getGreen2()), checkLimits(crec.getBlue2()), 1.0d);
+		for(int i=0; i< depthIter(depth); i++) {
+			c1=c1.darker();
+			c2=c2.darker();
+		}
+		colourSet.add(c1);
+		colourSet.add(c2);
 
-		if(crec.getNumcols() < 3) {
-			// Avoid any issues with the calculation, eg div0
-			colourSet.add(new Color(crec.getRed1(), crec.getGreen1(), crec.getBlue1(), 1.0d));
-			colourSet.add(new Color(crec.getRed2(), crec.getGreen2(), crec.getBlue2(), 1.0d));
-		}
-		double redStep = (crec.getRed2()-crec.getRed1()) / (crec.getNumcols()-1); //imagine this was 2; we'd want to step the whole distance in one go in the loop below
-		double greenStep = (crec.getGreen2()-crec.getGreen1()) / (crec.getNumcols()-1);
-		double blueStep = (crec.getBlue2()-crec.getBlue1()) / (crec.getNumcols()-1);
-		double r = crec.getRed1();
-		double g = crec.getGreen1();
-		double b = crec.getBlue1();
-		 
-		for(int i=0; i<crec.getNumcols(); i++) {
-			
-			colourSet.add(new Color(checkLimits(r), checkLimits(g), checkLimits(b), 1.0d));
-			r += redStep;
-			g += greenStep;
-			b += blueStep;
-		}
 		return colourSet;
 	}
 
-	private static final int NUM_RAINBOW_COLOURS = 16;
+
 	private static final int RED = 0;
 	private static final int GREEN = 1;
 	private static final int BLUE = 2;
-	private static final double[][] rainbowColours = {
-			{1.0d, 0.0d, 0.0d},
-			{1.0d, 0.5d, 0.0d},
-			{1.0d, 0.8d, 0.0d},
-			{1.0d, 1.0d, 0.0d},
-			{0.8d, 1.0d, 0.0d},
-			{0.5d, 1.0d, 0.0d},
-			{0.0d, 1.0d, 0.0d},
-			{0.0d, 1.0d, 0.5d},
-			{0.0d, 1.0d, 0.8d},
-			{0.0d, 1.0d, 1.0d},
-			{0.0d, 0.8d, 1.0d},
-			{0.0d, 0.5d, 1.0d},
-			{0.0d, 0.0d, 1.0d},
-			{0.5d, 0.0d, 1.0d},
-			{0.8d, 0.0d, 1.0d},
-			{1.0d, 0.0d, 1.0d}
-	};
 	
-	public static List<Color> getRainbowColours(PatchInfoRec crec) {
+	public static List<Color> getRainbowColours(PatchInfoRec crec, long depth) {
 		// create array of shaded colours to use, darken with distance.
-		List<Color> colourSet = new ArrayList<>();
+		List<Color> colourSet1 = new ArrayList<>();
+		List<Color> colourSet2 = new ArrayList<>();
 
 		if(crec.getNumcols() < 3) {
 			// Avoid any issues with the calculation, eg div0
-			colourSet.add(new Color(rainbowColours[0][RED], rainbowColours[0][GREEN], rainbowColours[0][BLUE], 1.0d));
-			colourSet.add(new Color(rainbowColours[NUM_RAINBOW_COLOURS-1][RED], rainbowColours[NUM_RAINBOW_COLOURS-1][GREEN], rainbowColours[NUM_RAINBOW_COLOURS-1][BLUE], 1.0d));
+			colourSet1.add(new Color(FracConstants.RAINBOWCOLOURS[0][RED], FracConstants.RAINBOWCOLOURS[0][GREEN], FracConstants.RAINBOWCOLOURS[0][BLUE], 1.0d));
+			colourSet1.add(new Color(FracConstants.RAINBOWCOLOURS[FracConstants.NUM_RAINBOW_COLOURS-1][RED], FracConstants.RAINBOWCOLOURS[FracConstants.NUM_RAINBOW_COLOURS-1][GREEN], FracConstants.RAINBOWCOLOURS[FracConstants.NUM_RAINBOW_COLOURS-1][BLUE], 1.0d));
 		}
 		
-		double step = (double)(NUM_RAINBOW_COLOURS-1)/(double)(crec.getNumcols()-1);
+		double step = (double)(FracConstants.NUM_RAINBOW_COLOURS-1)/(double)(crec.getNumcols()-1);
 		double pos = 0.0d;
 		for(int i=0; i<crec.getNumcols(); i++) {
 			int idx = (int) pos;
-			colourSet.add(new Color(rainbowColours[idx][RED], rainbowColours[idx][GREEN], rainbowColours[idx][BLUE], 1.0d));
+			colourSet1.add(new Color(FracConstants.RAINBOWCOLOURS[idx][RED], FracConstants.RAINBOWCOLOURS[idx][GREEN], FracConstants.RAINBOWCOLOURS[idx][BLUE], 1.0d));
 			pos += step;
 		}
+		
+		for(Color c:colourSet1) {
+			for(int i=0; i< depthIter(depth); i++) {
+				c=c.darker();
+				c=c.darker();
+			}
+			colourSet2.add(c);
+		}
 
-		return colourSet;
+		return colourSet2;
 	}
 	
 	
