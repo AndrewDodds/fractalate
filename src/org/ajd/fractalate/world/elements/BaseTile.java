@@ -14,6 +14,7 @@ public abstract class BaseTile {
 	// place within the overall grid
 	protected long xPos; //Negative to positive
 	protected long yPos;
+	protected long zPos;
 	
 	protected double height;
 		
@@ -27,6 +28,7 @@ public abstract class BaseTile {
 	protected void init(long xpos, long ypos, long depth, double height) {
 		this.xPos = xpos;
 		this.yPos = ypos;
+		this.zPos = depth;
 		this.height = height;
 		
 		xOffset = -0.5*FracConstants.TILE_SIZE;
@@ -37,7 +39,7 @@ public abstract class BaseTile {
 
 		// depth is a value from 1 to NUM_LAYERS, bigger values are closer 
 		// This should give a scale from 1.0 (closest layer) to 0.5 (most distant)
-		depthScale = (double)(depth + FracConstants.NUM_LAYERS) /  (double)(2*FracConstants.NUM_LAYERS);	
+		depthScale = (height + FracConstants.NUM_LAYERS) /  (2*FracConstants.NUM_LAYERS);	
 	}
 	
 		

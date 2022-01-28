@@ -14,7 +14,7 @@ import javafx.scene.paint.Color;
 public class ShapeBuilders {
 
 	private ShapeBuilders() {
-		// This is a set of shapesbuilders to use, don't instantiate
+		// This is a set of shape builders to use, don't instantiate
 	}
 
 	private static List<Shape> getShapeSetsFromPoints(PatchInfoRec cRec, Shape ts, double scale, double initialRotation, List<Color> colours) {		
@@ -37,8 +37,8 @@ public class ShapeBuilders {
 		for(int i=1; i<cRec.getNumIters(); i++) {
 			shapes.addAll(tempShapes);
 			List<Shape> tempShapes2 = new ArrayList<>();
-			double nextScale = initScale*0.3d; // TODO parameterise
-			double nextInitialRotation = initialRotation + 35.0d; //TODO  
+			double nextScale = initScale*0.6d; // TODO parameterise
+			double nextInitialRotation = initialRotation + 35.0d; //TODO  parameterise  
 			tempShapes.forEach(ts -> tempShapes2.addAll(getShapeSetsFromPoints(cRec, ts, nextScale,nextInitialRotation, colours)));
 			tempShapes = tempShapes2;
 			initScale = nextScale;
@@ -50,15 +50,35 @@ public class ShapeBuilders {
 	}
 
 	// Make all of this parameterised..
+	// Boring(!)
 	public static List<Shape> buildSquareShapes(PatchInfoRec cRec, double depthScale, long depth) {
 
-		double initScale = FracConstants.TILE_SIZE * depthScale * 1.4142d; // make the rectangle fill the area..
+		double initScale = FracConstants.TILE_SIZE * depthScale; // * 1.4142d; // make the rectangle fill the area..
 			
 		List<Shape> shapes = new ArrayList<>();
 		
 		List<Color> colours = cRec.getColourBuilder().getColours(cRec, depth);
 		shapes.add(new Shape(4, initScale, 45.0d, new Point2D(0.0d, 0.0d), colours, depth >= FracConstants.GROUND_LEVEL_LAYER, cRec.getRenderer()));
 				
+		return shapes;
+		
+	}
+
+	public static List<Shape> buildRandomShapes(PatchInfoRec cRec, double depthScale, long depth) {
+
+		double initScale = FracConstants.TILE_SIZE * depthScale; // * 1.4142d; // make the rectangle fill the area..
+			
+		List<Shape> shapes = new ArrayList<>();
+		
+		List<Color> colours = cRec.getColourBuilder().getColours(cRec, depth);
+		
+		shapes.add(new Shape(4, initScale, 45.0d, new Point2D(0.0d, 0.0d), colours, depth >= FracConstants.GROUND_LEVEL_LAYER, cRec.getRenderer()));
+		
+		RandomHolder.getRandom();
+		for(int i=0; i<cRec.getNumIters(); i++) {
+			//TODO add random shapes
+		}
+		
 		return shapes;
 		
 	}

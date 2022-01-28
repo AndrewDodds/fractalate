@@ -18,6 +18,7 @@ public class Shape implements Renderable {
 	private List<Point2D> initialPoints;
 	
 	private List<Point2D> points;
+	private Point2D centerPoint;
 	private PointsAsArrays paa;
 	
 	public List<Stop> getColGradStops() {
@@ -52,11 +53,12 @@ public class Shape implements Renderable {
 	}
 	
 	public Shape(int numSides, double scale, double initialRotation, Point2D origin, List<Color> colours, boolean isHighlight, Renderer r, List<Point2D> definedPoints) {
-		if(definedPoints == null) {
+		if(definedPoints == null || definedPoints.isEmpty()) {
 			createShape(numSides, scale, initialRotation, origin);
 		}
 		else {
 			this.points = definedPoints.stream().map(p->new Point2D(p.getX()*scale, p.getY()*scale)).toList();
+			this.centerPoint = definedPoints.get(0);
 		}
 		
 		this.isHighlight = isHighlight;
@@ -107,6 +109,7 @@ public class Shape implements Renderable {
 	//Create a shape according to the scale, centered on the origin.
 	public void createShape(int numsides, double scale, double initialRotation, Point2D origin) {
 		points =  new ArrayList<>(numsides);
+		centerPoint = origin;
 		double sideAngle = initialRotation;
 		double angleIncrement = 360.0d/numsides;
 		for(int i=0; i<numsides; i++ ) {
@@ -134,7 +137,8 @@ public class Shape implements Renderable {
 	
 
 	@Override
-	public void render(GraphicsContext gc) {		
+	public void render(GraphicsContext gc) {	
+		
 		r.render(this, gc);		
 	}
 
@@ -158,6 +162,10 @@ public class Shape implements Renderable {
 	
 	public List<Point2D> getPoints() {
 		return points;
+	}
+	
+	public Point2D getCenterPoint () {
+		return centerPoint;
 	}
 	
 	public PointsAsArrays getPointsAsArrays() {

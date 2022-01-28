@@ -8,6 +8,8 @@ public final class FracConstants {
 	// Will probably have to make this dependent on screen size
 	public static final double TILE_SIZE = 200.0d;
 	
+	public static final double TIME_CONSTANT = 10000000.0d;
+	
 	// Effective size of world
 	public static final long NUM_LAYERS = 5L;
 	public static final long GROUND_LEVEL_LAYER = 3L;

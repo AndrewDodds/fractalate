@@ -21,7 +21,10 @@ public class Tile extends BaseTile {
 		
 		shapes = cRec.getShapesBuilder().buildShapes(cRec, depthScale, depth);
 	}
+	
 		
+
+	
 	// Scalefactor will usually be 1. But we also scale according to depth. This means we can zoom in/out if we want..
 	@Override
 	public void render(GraphicsContext gc, double scaleFactor, Coordinate refPos) {

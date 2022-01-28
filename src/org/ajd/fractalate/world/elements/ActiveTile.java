@@ -25,8 +25,8 @@ public class ActiveTile extends BaseTile {
 	
 	private double targetAngle = 0.0d; 
 	
-	public ActiveTile(long xpos, long ypos, long depth, ActiveEntityRec initInfo) {
-		this.init(xpos, ypos, depth, depth);
+	public ActiveTile(long xpos, long ypos, long depth, double height, ActiveEntityRec initInfo) {
+		this.init(xpos, ypos, depth, height);
 		
 		buildTile(initInfo);
 		
@@ -38,7 +38,7 @@ public class ActiveTile extends BaseTile {
 			theShapes.add( new Shape(1, 0.9d*cSize*2.0d, 0.0d, new Point2D(0.0d, 0.0d), Arrays.asList(initInfo.getColourGradientStops().get(0)), true, ShapeRenderers::circlesRenderer).setAsRotateable()); 
 		}
 		else if(initInfo.getMainNumSides() == 2) { // Rounded Rectangle
-			theShapes.add( new Shape(1, 0.9d*cSize*2.0d, 0.0d, new Point2D(0.0d, 0.0d), Arrays.asList(initInfo.getColourGradientStops().get(0)), true, ShapeRenderers::roundedSquareRenderer).setAsRotateable()); 
+			theShapes.add( new Shape(1, 0.9d*cSize*2.0d, 0.0d, new Point2D(0.0d, -cSize), Arrays.asList(initInfo.getColourGradientStops().get(0)), true, ShapeRenderers::roundedSquareRenderer).setAsRotateable()); 
 		}
 		else {
 			theShapes.add( new Shape(initInfo.getMainNumSides(), 0.9d*cSize*2.0d, 0.0d, new Point2D(0.0d, 0.0d), Arrays.asList(initInfo.getColourGradientStops().get(0)), true, ShapeRenderers::polyRenderer).setAsRotateable()); 
@@ -79,18 +79,21 @@ public class ActiveTile extends BaseTile {
 		}
 	}
 
+	// should be evenly spaced from -0.4 to +0.4
 	private void buildEyeShapes(ActiveEntityRec initInfo, double cSize) {
-		double startXPos = 0.0d - (0.15d * (initInfo.getNumEyes()-1));
+
+		double startXPos = -(0.4d * cSize);
 		double deltaX = 0.0d;
 		if(initInfo.getNumEyes() > 1) {
-			deltaX = 1.6d/(initInfo.getNumEyes()-1); // Did I mention that I regard the existence of NaN as an abomination ?
+			deltaX = (0.8d/(initInfo.getNumEyes()-1)) * cSize; 
+		}// Did I mention that I regard the existence of NaN as an abomination ?
+		else {
+			 startXPos = 0.0d;
 		}
-		
-		
 		for(int i=0; i<initInfo.getNumEyes(); i++) {
-			theShapes.add(new Shape(1, 0.1d*cSize, 0.0d, new Point2D(startXPos, 0.0d), Arrays.asList(Color.WHITE), true, ShapeRenderers::circlesRenderer).setAsRotateable());
-			theShapes.add(new Shape(1, 0.03d*cSize, 0.0d, new Point2D(startXPos, 0.01d), Arrays.asList(Color.BLACK), true, ShapeRenderers::circlesRenderer).setAsRotateable());
-			startXPos += deltaX;	
+			theShapes.add(new Shape(1, 0.1d*cSize, 0.0d, new Point2D(0.0d, 0.0d), Arrays.asList(Color.WHITE), true, ShapeRenderers::circlesRenderer, Arrays.asList(new Point2D(startXPos, 0.0d))).setAsRotateable());
+			theShapes.add(new Shape(1, 0.03d*cSize, 0.0d, new Point2D(0.0d, 0.0d), Arrays.asList(Color.BLACK), true, ShapeRenderers::circlesRenderer, Arrays.asList(new Point2D(startXPos, 0.0d))).setAsRotateable());
+			startXPos += deltaX;
 		}
 	}
 

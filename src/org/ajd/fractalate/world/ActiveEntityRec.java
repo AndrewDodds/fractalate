@@ -19,9 +19,9 @@ public class ActiveEntityRec {
 		// Set up info for Active entity.
 		Random r = RandomHolder.getRandom();
 		
-		mainNumSides = r.nextInt(FracConstants.MAX_ACTIVETILE_SIDES + 1);
-		numGuns = r.nextInt(FracConstants.MAX_ACTIVETILE_NUMGUNS + 1);
-		numEyes = r.nextInt(FracConstants.MAX_ACTIVETILE_EYES + 1);
+		mainNumSides = r.nextInt(FracConstants.MAX_ACTIVETILE_SIDES) + 1;
+		numGuns = r.nextInt(FracConstants.MAX_ACTIVETILE_NUMGUNS) + 1;
+		numEyes = r.nextInt(FracConstants.MAX_ACTIVETILE_EYES) + 1;
 		
 		// Need to figure out how colours will change - list of 10 or so?
 		colourGradients = new ArrayList<>();

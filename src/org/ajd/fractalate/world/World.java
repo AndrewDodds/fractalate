@@ -39,31 +39,35 @@ public class World implements Renderable {
 	}
 	
 	
+	private void checkAndAddActiveTile(double height, int xPos, int yPos, int zPos, double difficulty) {
+		if((height <  (zPos+1) && height <= FracConstants.GROUND_LEVEL_LAYER) && (RandomHolder.getRandom().nextDouble() < (FracConstants.ACTIVE_TILE_FREQ*difficulty))) {
+			// This is the 'top' of a stack		
+			tiles.add(new ActiveTile(xPos, yPos, zPos+1L,  height+0.1d, new ActiveEntityRec(difficulty)));
+		}							
+		
+	}
+	
 	private void buildTiles(double[][] heightArray, PatchInfoRec[][] colArray, double difficulty) {
 		
 		// Create all tiles - start from the bottom, so ArrayList ordering should(!) give us free z buffering
 		// And here we build the list of tiles from the bottom up, so we don't need to worry about Z buffering later
 		tiles = new ArrayList<>();
-		List<ActiveTile> tempActiveTiles1 = new ArrayList<>();
-		List<ActiveTile> tempActiveTiles2 = new ArrayList<>();
-		for(int h = 1; h<=FracConstants.NUM_LAYERS; h++) {
-			for(int i=0; i<xSize; i++) {
-				for(int j=0; j<ySize; j++) {
+		for(int i=0; i<xSize; i++) {
+			for(int j=0; j<ySize; j++) {
+				for(int h = 1; h<=FracConstants.NUM_LAYERS; h++) {
 					if(heightArray[i][j] > h) {
-						tiles.add( new Tile(i-(long)(xSize/2), j, h, heightArray[i][j], colArray[i][j]));
-						if(heightArray[i][j] < (h+1) && heightArray[i][j] <= FracConstants.GROUND_LEVEL_LAYER) {
-							// This is the 'top' of a stack
-							if(RandomHolder.getRandom().nextDouble() < (FracConstants.ACTIVE_TILE_FREQ*difficulty)) {
-								tempActiveTiles1.add(new ActiveTile(i-(long)(xSize/2), j, h, new ActiveEntityRec(difficulty)));
-							}							
-						}
+						double high = (heightArray[i][j] > h + 1) ? h : heightArray[i][j];
+						tiles.add( new Tile(i-(long)(xSize/2), j, h, high, colArray[i][j]));
+						checkAndAddActiveTile(heightArray[i][j], i-(xSize/2), j, h, difficulty);
+					}
+					else {
+						break;
 					}
 				}
 			}
-			tempActiveTiles2.forEach(ta -> tiles.add(ta));
-			tempActiveTiles2 = tempActiveTiles1;
-			tempActiveTiles1 = new ArrayList<>();	
 		}
+				
+		tiles.sort(Comparator.comparing(BaseTile::getHeight));
 		
 	}
 	
@@ -108,7 +112,7 @@ public class World implements Renderable {
 				if (randVals[rpos] >= -99.0d) {
 					anchorPoints[i][j] = true;
 					heightArray[i][j] = randVals[rpos];
-					colArray[i][j] = new PatchInfoRec((randVals[rpos] + FracConstants.NUM_LAYERS)/FracConstants.NUM_LAYERS);
+					colArray[i][j] = new PatchInfoRec(1.0d);
 				}
 				else {
 					anchorPoints[i][j] = false;
