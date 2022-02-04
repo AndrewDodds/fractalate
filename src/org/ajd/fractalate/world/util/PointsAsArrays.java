@@ -18,7 +18,7 @@ public class PointsAsArrays {
 		if(xpoints != null) {
 			return xpoints;
 		}
-		xpoints = pts.stream().mapToDouble((p) ->p.getX()).toArray();
+		xpoints = pts.stream().mapToDouble(Point2D::getX).toArray();
 		return xpoints;
 	}
 	
@@ -26,7 +26,7 @@ public class PointsAsArrays {
 		if(ypoints != null) {
 			return ypoints;
 		}
-		ypoints = pts.stream().mapToDouble((p) ->p.getY()).toArray();
+		ypoints = pts.stream().mapToDouble(Point2D::getY).toArray();
 		return ypoints;
 	}
 }

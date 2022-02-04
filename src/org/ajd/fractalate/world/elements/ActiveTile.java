@@ -9,6 +9,7 @@ import org.ajd.fractalate.world.ActiveEntityRec;
 import org.ajd.fractalate.world.elements.builders.ShapeRenderers;
 import org.ajd.fractalate.world.util.Coordinate;
 
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -25,7 +26,7 @@ public class ActiveTile extends BaseTile {
 	
 	private double targetAngle = 0.0d; 
 	
-	public ActiveTile(long xpos, long ypos, long depth, double height, ActiveEntityRec initInfo) {
+	public ActiveTile(int xpos, int ypos, int depth, double height, ActiveEntityRec initInfo) {
 		this.init(xpos, ypos, depth, height);
 		
 		buildTile(initInfo);
@@ -115,15 +116,25 @@ public class ActiveTile extends BaseTile {
 		targetAngle = angle;
 	}
 
-	@Override
+
 	public void render(GraphicsContext gc, double scaleFactor, Coordinate refPos) {
 						
-		Coordinate realCenter = this.getRealCenter(gc, scaleFactor, refPos);
+		Bounds b = gc.getCanvas().getBoundsInLocal();
+		this.centerPos.setRefPos(refPos);
+		Coordinate realCenter = this.centerPos.getScreenCoords(b, scaleFactor);
 		
 		if(shouldDisplay(gc.getCanvas().getBoundsInLocal(), realCenter) ) {
 			theShapes.forEach(s -> {s.setCoord(realCenter); s.setRotation(targetAngle); s.render(gc);}); 
 		}
 	}
+
+	@Override
+	public void update(long timeStepNS) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 
 }
 

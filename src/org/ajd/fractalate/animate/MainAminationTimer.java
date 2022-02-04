@@ -1,10 +1,8 @@
 package org.ajd.fractalate.animate;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.ajd.fractalate.scenes.MainGameScene;
-import org.ajd.fractalate.world.Renderable;
+import org.ajd.fractalate.world.Background;
 import org.ajd.fractalate.world.ScoreCard;
 import org.ajd.fractalate.world.World;
 import org.ajd.fractalate.world.util.Coordinate;
@@ -12,7 +10,7 @@ import org.ajd.fractalate.world.util.Coordinate;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+
 
 public class MainAminationTimer extends AnimationTimer {
 
@@ -22,15 +20,17 @@ public class MainAminationTimer extends AnimationTimer {
     Point2D screenSize;
     GraphicsContext gc;
     MainGameScene theScene;
+	private ScoreCard scoreCard;
+	private Background background;
+	World world;
     
-    SortedMap<Integer, Renderable> objectsToDraw = new TreeMap<>();
-
     public MainAminationTimer(GraphicsContext gcontext, MainGameScene scene, Point2D theScreenSize, World world) {
     	gc = gcontext;
     	theScene = scene;
     	screenSize  = theScreenSize;
-    	objectsToDraw.put(10, world);
-    	objectsToDraw.put(20, new ScoreCard(theScreenSize));
+    	scoreCard = new ScoreCard(theScreenSize);
+    	background = new Background(theScreenSize);
+    	this.world = world;
 	}
     
 	@Override
@@ -54,18 +54,20 @@ public class MainAminationTimer extends AnimationTimer {
     }
 	
 	private void doUpdates(long t) {
-        objectsToDraw.forEach((k, r) -> r.update(t));
-		
+		world.update(t);
+		scoreCard.update(t);		
 	}
 
 	private void drawTheScene() {
-		Color bgColour = new Color(0.0d, 0.0d, 0.0d, 1.0d);
-		gc.setStroke(bgColour);
-		gc.setFill(bgColour);
-		
-        gc.fillRect(0.0d,  0.0d,  screenSize.getX(), screenSize.getY());
 
-        objectsToDraw.forEach((k, r) -> {r.setCoord(new Coordinate(xPos, yPos, screenSize.getX() )); r.render(gc);});
+        Coordinate c =  new Coordinate(xPos, yPos, screenSize.getX() );
+        
+        background.render(gc, 1.0d, c);
+        
+        world.setCoord(c);
+        world.render(gc);
+                
+        scoreCard.render(gc, 1.0d, c);
 	}
 
 }

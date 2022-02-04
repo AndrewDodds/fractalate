@@ -14,7 +14,7 @@ import org.ajd.fractalate.world.util.Coordinate;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class World implements Renderable {
+public class World  {
 	private List<BaseTile> tiles;
 	private List<BackgroundTile> backgroundTiles;
 	
@@ -32,6 +32,7 @@ public class World implements Renderable {
 		buildBackgroundTiles();
 		
 		calcHeightMapBuildTiles(difficulty, FracConstants.BASE_COMPLEXITY);
+				
 	}
 	
 	public void setCoord(Coordinate newCoord) {
@@ -42,7 +43,7 @@ public class World implements Renderable {
 	private void checkAndAddActiveTile(double height, int xPos, int yPos, int zPos, double difficulty) {
 		if((height <  (zPos+1) && height <= FracConstants.GROUND_LEVEL_LAYER) && (RandomHolder.getRandom().nextDouble() < (FracConstants.ACTIVE_TILE_FREQ*difficulty))) {
 			// This is the 'top' of a stack		
-			tiles.add(new ActiveTile(xPos, yPos, zPos+1L,  height+0.1d, new ActiveEntityRec(difficulty)));
+			tiles.add(new ActiveTile(xPos, yPos, zPos+1,  height+0.1d, new ActiveEntityRec(difficulty)));
 		}							
 		
 	}
@@ -57,7 +58,7 @@ public class World implements Renderable {
 				for(int h = 1; h<=FracConstants.NUM_LAYERS; h++) {
 					if(heightArray[i][j] > h) {
 						double high = (heightArray[i][j] > h + 1) ? h : heightArray[i][j];
-						tiles.add( new Tile(i-(long)(xSize/2), j, h, high, colArray[i][j]));
+						tiles.add( new Tile(i-(xSize/2), j, h, high, colArray[i][j]));
 						checkAndAddActiveTile(heightArray[i][j], i-(xSize/2), j, h, difficulty);
 					}
 					else {
@@ -84,7 +85,7 @@ public class World implements Renderable {
 			}
 			Color col2 = new Color(FracConstants.RAINBOWCOLOURS[colIdx2][0],FracConstants.RAINBOWCOLOURS[colIdx2][1],FracConstants.RAINBOWCOLOURS[colIdx2][2], 1.0d);
 			for(int i=0; i<xSize; i++) {
-				backgroundTiles.add( new BackgroundTile(i-(long)(xSize/2), j, col1, col2));
+				backgroundTiles.add( new BackgroundTile(i-(xSize/2), j, col1, col2));
 			}
 		}
 	}
@@ -212,14 +213,18 @@ public class World implements Renderable {
 	public void render(GraphicsContext gc) {
 		gc.clearRect(worldScale, ySize, xSize, worldScale);
 		
-		backgroundTiles.forEach(t -> t.render(gc, worldScale, myCoord));		
+		backgroundTiles.forEach(t -> t.render(gc, worldScale, myCoord));	
+		
+		
+		
 		tiles.forEach(t -> t.render(gc, worldScale, myCoord));		
 	}
 
-	@Override
+
 	public void update(long timeStepNS) {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+
 }

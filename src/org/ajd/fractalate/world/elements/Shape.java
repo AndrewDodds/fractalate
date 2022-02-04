@@ -172,11 +172,6 @@ public class Shape implements Renderable {
 		return paa;
 	}
 
-	@Override
-	public void update(long timeStepNS) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	
 		

@@ -5,17 +5,17 @@ import org.ajd.fractalate.FracConstants;
 import org.ajd.fractalate.world.PatchInfoRec;
 import org.ajd.fractalate.world.util.Coordinate;
 
+import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 
 // Main tile class. 
 public class Tile extends BaseTile {
 	
 	// Constructor. Depth is basically a layer, height an absolute value (used to calculate depth)
-	public Tile(long xpos, long ypos, long depth, double height, PatchInfoRec cRec) {
+	public Tile(int xpos, int ypos, int depth, double height, PatchInfoRec cRec) {
 		if(depth < 1 || depth > FracConstants.NUM_LAYERS) {
-			depth = 1L;
+			depth = 1;
 		}
-		
 
 		this.init(xpos, ypos, depth, height);
 		
@@ -26,11 +26,12 @@ public class Tile extends BaseTile {
 
 	
 	// Scalefactor will usually be 1. But we also scale according to depth. This means we can zoom in/out if we want..
-	@Override
 	public void render(GraphicsContext gc, double scaleFactor, Coordinate refPos) {
 						
-		Coordinate realCenter = this.getRealCenter(gc, scaleFactor, refPos);
-	
+		Bounds b = gc.getCanvas().getBoundsInLocal();
+		this.centerPos.setRefPos(refPos);
+		Coordinate realCenter = this.centerPos.getScreenCoords(b, scaleFactor);
+
 		
 		if(shouldDisplay(gc.getCanvas().getBoundsInLocal(), realCenter)) {
 			
@@ -38,6 +39,15 @@ public class Tile extends BaseTile {
 				{s.setCoord(realCenter); 
 				 s.render(gc);});
 		}
+	}
+
+
+
+
+	@Override
+	public void update(long timeStepNS) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
