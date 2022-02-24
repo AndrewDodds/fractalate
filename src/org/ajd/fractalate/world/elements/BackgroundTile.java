@@ -25,8 +25,8 @@ public class BackgroundTile extends BaseTile  {
 	public void render(GraphicsContext gc, double scaleFactor, Coordinate refPos) {
 						
 		Bounds b = gc.getCanvas().getBoundsInLocal();
-		this.centerPos.setRefPos(refPos);
-		Coordinate realCenter = this.centerPos.getScreenCoords(b, scaleFactor);
+
+		Coordinate realCenter = this.centerPos.getScreenCoords(b, refPos, scaleFactor);
 
 		if(shouldDisplay(gc.getCanvas().getBoundsInLocal(), realCenter) ) {
 			theShape.setCoord(realCenter);
@@ -36,7 +36,7 @@ public class BackgroundTile extends BaseTile  {
 
 
 	@Override
-	public void update(long timeStepNS) {
+	public void update(double timeStepNS) {
 		// TODO Auto-generated method stub
 		
 	}

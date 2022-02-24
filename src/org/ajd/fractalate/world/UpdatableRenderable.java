@@ -9,7 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 // So we can collect all renderables and z-sort them
 public interface UpdatableRenderable {
 	
-	public void update(long timeStepNS);
+	public void update(double t2);
 	
 	public double getHeight();
 		

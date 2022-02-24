@@ -38,7 +38,7 @@ public class ScoreCard implements UpdatableRenderable {
 	}
 
 	@Override
-	public void update(long timeStepNS) {
+	public void update(double timeStepNS) {
 		// TODO Auto-generated method stub
 		
 	}

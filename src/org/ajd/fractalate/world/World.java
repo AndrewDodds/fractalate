@@ -5,13 +5,19 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.ajd.fractalate.FracConstants;
+import org.ajd.fractalate.entities.BaseEntity;
+import org.ajd.fractalate.entities.Player;
+import org.ajd.fractalate.entities.TargetReticle;
+import org.ajd.fractalate.scenes.MainGameScene;
 import org.ajd.fractalate.world.elements.ActiveTile;
 import org.ajd.fractalate.world.elements.BackgroundTile;
 import org.ajd.fractalate.world.elements.BaseTile;
 import org.ajd.fractalate.world.elements.Tile;
 import org.ajd.fractalate.world.util.Coordinate;
 
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 public class World  {
@@ -22,7 +28,12 @@ public class World  {
 	private int ySize = (int) ((FracConstants.MAX_Y - FracConstants.MIN_Y) + 1);
 	
 	private double worldScale = 1.0d;
-	private Coordinate myCoord = new Coordinate(100.0d, 100.0d, 100.0d);
+	private MutableCoordinate myCoord = new MutableCoordinate(0, 0, 0);
+	
+	private List<BaseEntity> entities = new ArrayList<>();
+	
+	private Point2D mousePos = new Point2D(0.0d, 0.0d);
+	private MainGameScene scene;
 
 	public World(double difficulty, long seed) {
 		tiles = new ArrayList<>();
@@ -32,11 +43,24 @@ public class World  {
 		buildBackgroundTiles();
 		
 		calcHeightMapBuildTiles(difficulty, FracConstants.BASE_COMPLEXITY);
+		
+		addPlayerEntity();
+		addReticleEntity();
 				
 	}
 	
-	public void setCoord(Coordinate newCoord) {
-		myCoord = newCoord;
+	private void addPlayerEntity() {
+		entities.add(new Player(0, 1, (int) FracConstants.NUM_LAYERS, FracConstants.NUM_LAYERS + 0.1d, this));
+		
+	}
+
+	private void addReticleEntity() {
+		entities.add(new TargetReticle(0, 2, (int) FracConstants.NUM_LAYERS, FracConstants.NUM_LAYERS + 0.2d, this));
+		
+	}
+
+	public void updateCoord(Point2D delta) {
+		myCoord.moveBy(delta);
 	}
 	
 	
@@ -213,17 +237,36 @@ public class World  {
 	public void render(GraphicsContext gc) {
 		gc.clearRect(worldScale, ySize, xSize, worldScale);
 		
-		backgroundTiles.forEach(t -> t.render(gc, worldScale, myCoord));	
+		Coordinate c = new Coordinate( myCoord.getWorldPos().getX(), myCoord.getWorldPos().getY(), myCoord.getWorldPos().getZ());
+		backgroundTiles.forEach(t -> t.render(gc, worldScale, c));					
 		
+		tiles.forEach(t -> t.render(gc, worldScale, c));		
 		
-		
-		tiles.forEach(t -> t.render(gc, worldScale, myCoord));		
+		entities.forEach(t -> t.render(gc, worldScale, c));	
 	}
 
 
-	public void update(long timeStepNS) {
-		// TODO Auto-generated method stub
+	public void update(double t2) {
+		tiles.forEach(t -> t.update(t2));
 		
+		entities.forEach(t -> t.update(t2));
+		
+	}
+
+	public void mouseMove(MouseEvent e) {
+		mousePos = new Point2D(e.getSceneX(), e.getSceneY());
+	}
+	
+	public Point2D getMousePos() {
+		return mousePos;
+	}
+
+	public void setScene(MainGameScene scene) {
+		this.scene = scene;
+	}
+	
+	public MainGameScene getScene() {
+		return scene;
 	}
 
 

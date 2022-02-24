@@ -19,7 +19,7 @@ public abstract class BaseEntity implements UpdatableRenderable {
 	protected Point2D velocity;
 	
 	protected Coordinate currentWorldCoord;
-	protected double scaleFactor;
+	protected double scaleFactor= 1.0d;
 	
 	MutableCoordinate entityPosition;
 	
@@ -38,7 +38,7 @@ public abstract class BaseEntity implements UpdatableRenderable {
 	}
 	
 	@Override
-	public void update(long timeStepNS) {
+	public void update(double timeStepNS) {
 		throw new UnsupportedOperationException("Entities should not be using the default implementation of Update");
 
 	}

@@ -20,18 +20,15 @@ public class Tile extends BaseTile {
 		this.init(xpos, ypos, depth, height);
 		
 		shapes = cRec.getShapesBuilder().buildShapes(cRec, depthScale, depth);
-	}
-	
-		
+	}	
 
 	
 	// Scalefactor will usually be 1. But we also scale according to depth. This means we can zoom in/out if we want..
 	public void render(GraphicsContext gc, double scaleFactor, Coordinate refPos) {
 						
 		Bounds b = gc.getCanvas().getBoundsInLocal();
-		this.centerPos.setRefPos(refPos);
-		Coordinate realCenter = this.centerPos.getScreenCoords(b, scaleFactor);
 
+		Coordinate realCenter = this.centerPos.getScreenCoords(b, refPos, scaleFactor);
 		
 		if(shouldDisplay(gc.getCanvas().getBoundsInLocal(), realCenter)) {
 			
@@ -42,10 +39,8 @@ public class Tile extends BaseTile {
 	}
 
 
-
-
 	@Override
-	public void update(long timeStepNS) {
+	public void update(double timeStepNS) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -92,6 +92,7 @@ public class MutableCoordinate {
 	
 	public void moveBy(Point2D move) {
 		worldCoord = new Point3D (worldCoord.getX() + (move.getX()*depthScale), worldCoord.getY() + (move.getY()*depthScale), 0.0d);
+		
 		calcGridPosFromWorldPos();
 	}
 	
@@ -111,7 +112,9 @@ public class MutableCoordinate {
 	}
 	
 	// Translate to get to screen coordinates
-	public Coordinate getScreenCoords(Bounds b, double scaleFactor) {
+	public Coordinate getScreenCoords(Bounds b, Coordinate refPos, double scaleFactor) {
+		
+		setRefPos(refPos);
 		
 		double centerX = (rawCenter.x() * scaleFactor) + (b.getWidth() / 2.0d);
 		double centerY = (rawCenter.y() * scaleFactor)  + b.getHeight();
