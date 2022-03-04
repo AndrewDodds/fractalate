@@ -4,6 +4,10 @@ public final class FracConstants {
 
 	private FracConstants() {
 	}
+	
+	public static final double DEGREES_TO_RADS = 57.295779513d;
+	
+
 
 	// Will probably have to make this dependent on screen size
 	public static final double TILE_SIZE = 200.0d;
@@ -63,5 +67,6 @@ public final class FracConstants {
 	public static final int MAX_ACTIVETILE_NUMGUNS = 4;
 	public static final int MAX_ACTIVETILE_EYES = 5;
 	public static final int ACTIVETILE_COLOURS = 16;
+	public static final double ACTIVETRACKER_SPEEDDIV = 5.0d;
 	
 }

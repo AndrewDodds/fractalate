@@ -61,6 +61,7 @@ public class MutableCoordinate {
 		calcWorldPosFromGrid();
 		
 		setRefPos(new Coordinate (0.0d, 0.0d, 0.0d));
+		screenCoord = new Point3D(0.0d, 0.0d, 0.0d);
 	}
 	
 	
@@ -79,6 +80,10 @@ public class MutableCoordinate {
 	
 	public Point3D getWorldPos() {
 		return worldCoord;
+	}
+	
+	public Point3D getLastScreenPos() {
+		return screenCoord;
 	}
 	
 	public IntCoord getGridPos() {
@@ -119,7 +124,8 @@ public class MutableCoordinate {
 		double centerX = (rawCenter.x() * scaleFactor) + (b.getWidth() / 2.0d);
 		double centerY = (rawCenter.y() * scaleFactor)  + b.getHeight();
 		double tileSize = (rawCenter.z() * scaleFactor);
-				
+		
+		screenCoord = new Point3D(centerX, centerY, tileSize);
 		return new Coordinate(centerX, centerY, tileSize);
 	}
 

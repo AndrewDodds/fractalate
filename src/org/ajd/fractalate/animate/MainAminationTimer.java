@@ -29,7 +29,7 @@ public class MainAminationTimer extends AnimationTimer {
     	gc = gcontext;
     	theScene = scene;
     	screenSize  = theScreenSize;
-    	scoreCard = new ScoreCard(theScreenSize);
+    	scoreCard = new ScoreCard(theScreenSize, world);
     	background = new Background(theScreenSize);
     	theScene.addEventFilter(MouseEvent.MOUSE_MOVED, world::mouseMove);
      	this.world = world;
@@ -40,18 +40,27 @@ public class MainAminationTimer extends AnimationTimer {
     public void handle(long currentNanoTime)
     {
 		deltaX = 0.0d;
+		deltaY = 0.0d;
         double t = (currentNanoTime - prevtime) / 10000000.0; 
         if (theScene.getCurrentInput().contains("LEFT")) {
-        	deltaX = -(t*5.0d);
+        	deltaX = (t*5.0d);
         }
         if (theScene.getCurrentInput().contains("RIGHT")) {
-        	deltaX = (t*5.0d);
-         }	 
+        	deltaX = -(t*5.0d);
+        }	 
+        if (theScene.getCurrentInput().contains("UP")) {
+        	deltaY = -(t*5.0d);
+        }
+        if (theScene.getCurrentInput().contains("DOWN")) {
+        	deltaY = (t*5.0d);
+        }	 
     	
         doUpdates(t);
 
         prevtime = currentNanoTime;
-        deltaY = -t;
+        if(deltaY == 0.0d) { 
+        	deltaY = -t;
+        }
 
         
         drawTheScene();

@@ -3,6 +3,7 @@ package org.ajd.fractalate.world.elements;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ajd.fractalate.FracConstants;
 import org.ajd.fractalate.world.Renderable;
 import org.ajd.fractalate.world.elements.builders.Renderer;
 import org.ajd.fractalate.world.util.Coordinate;
@@ -19,6 +20,7 @@ public class Shape implements Renderable {
 	
 	private List<Point2D> points;
 	private Point2D centerPoint;
+	private Point2D originalCenterPoint;
 	private PointsAsArrays paa;
 	
 	public List<Stop> getColGradStops() {
@@ -45,8 +47,6 @@ public class Shape implements Renderable {
 	
 	private Renderer r; 
 	
-	private static final double DEGREES_TO_RADS = 57.295779513d;
-	
 	
 	public Shape(int numSides, double scale, double initialRotation, Point2D origin, List<Color> colours, boolean isHighlight, Renderer r) {
 		this(numSides, scale, initialRotation, origin, colours, isHighlight, r, null); 
@@ -59,6 +59,7 @@ public class Shape implements Renderable {
 		else {
 			this.points = definedPoints.stream().map(p->new Point2D(p.getX()*scale, p.getY()*scale)).toList();
 			this.centerPoint = definedPoints.get(0);
+			originalCenterPoint = centerPoint;
 		}
 		
 		this.isHighlight = isHighlight;
@@ -99,7 +100,7 @@ public class Shape implements Renderable {
 	}
 	
 	private Point2D rotateBy(Point2D p, double degrees) {
-		double rads = degrees / DEGREES_TO_RADS;
+		double rads = degrees / FracConstants.DEGREES_TO_RADS;
 		double newX = (p.getX() * Math.cos(rads)) - (p.getY() * Math.sin(rads));
 		double newY = (p.getY() * Math.cos(rads)) + (p.getX() * Math.sin(rads));
 		return new Point2D(newX, newY);				
@@ -110,6 +111,7 @@ public class Shape implements Renderable {
 	public void createShape(int numsides, double scale, double initialRotation, Point2D origin) {
 		points =  new ArrayList<>(numsides);
 		centerPoint = origin;
+		originalCenterPoint = origin;
 		double sideAngle = initialRotation;
 		double angleIncrement = 360.0d/numsides;
 		for(int i=0; i<numsides; i++ ) {
@@ -126,6 +128,7 @@ public class Shape implements Renderable {
 			throw new UnsupportedOperationException("Need to set a shape to be rotateable before rotating.");
 		}
 		points = initialPoints.stream().map(p->rotateBy(p, rotation)).toList();
+		centerPoint = rotateBy(originalCenterPoint, rotation);
 		paa = new PointsAsArrays(points);
 	}
 	

@@ -6,7 +6,6 @@ import org.ajd.fractalate.world.World;
 import org.ajd.fractalate.world.util.Coordinate;
 
 import javafx.geometry.Point2D;
-
 import javafx.scene.canvas.GraphicsContext;
 
 // Base class for mobile entities
@@ -47,7 +46,12 @@ public abstract class BaseEntity implements UpdatableRenderable {
 	@Override
 	public void render(GraphicsContext gc,  double scaleFactor, Coordinate refPos) {
 		throw new UnsupportedOperationException("Entities should not be using the default implementation of Render");
-
 	}
+	
+	public MutableCoordinate getPos() {
+		return entityPosition;
+	}
+	
+	
 
 }

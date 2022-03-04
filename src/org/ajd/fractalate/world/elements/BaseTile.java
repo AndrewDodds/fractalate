@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.ajd.fractalate.world.MutableCoordinate;
 import org.ajd.fractalate.world.UpdatableRenderable;
+import org.ajd.fractalate.world.World;
 import org.ajd.fractalate.world.util.Coordinate;
 
 import javafx.geometry.Bounds;
@@ -15,15 +16,17 @@ public abstract class BaseTile implements UpdatableRenderable {
 	
 	protected double height;
 	protected MutableCoordinate centerPos;
-	
+	protected World world;
+	protected Bounds bounds;
 	
 	protected List<Shape> shapes;
 	
 	protected int numColours = 0;
 	protected double depthScale = 1.0d;	
 			
-	protected void init(int xpos, int ypos, int depth, double height) {
+	protected void init(int xpos, int ypos, int depth, double height, World w) {
 		this.height = height;
+		this.world = w;
 		
 		centerPos = new MutableCoordinate(xpos, ypos, depth);
 		
@@ -34,9 +37,13 @@ public abstract class BaseTile implements UpdatableRenderable {
 	}
 		
 	
-	protected boolean shouldDisplay(Bounds b, Coordinate realCenter) {
-		return (b.contains(new Point2D(realCenter.x()+realCenter.z(), realCenter.y())) ||
-				b.contains(new Point2D(realCenter.x()-realCenter.z(), realCenter.y())));
+	protected boolean shouldDisplay(Coordinate realCenter) {
+		if(bounds == null) {
+			return false;
+		}
+		
+		return (bounds.contains(new Point2D(realCenter.x()+realCenter.z(), realCenter.y())) ||
+				bounds.contains(new Point2D(realCenter.x()-realCenter.z(), realCenter.y())));
 
 	}
 			

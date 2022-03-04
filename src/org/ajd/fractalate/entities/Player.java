@@ -23,13 +23,23 @@ public class Player extends BaseEntity {
 	public void update(double timeStepNS) {
 
 		double deltaX = 0.0d;
+		double deltaY = 0.0d;
         if (this.w.getScene().getCurrentInput().contains("LEFT")) {
-        	deltaX = (timeStepNS*2.5d);
+        	deltaX = -(timeStepNS*2.5d);
         }
         if (this.w.getScene().getCurrentInput().contains("RIGHT")) {
-        	deltaX = -(timeStepNS*2.5d);
+        	deltaX = (timeStepNS*2.5d);
         }	 
-        Point2D scaledVelocity = new Point2D(deltaX, timeStepNS/2.0d);
+        if (this.w.getScene().getCurrentInput().contains("UP")) {
+        	deltaY = (timeStepNS*2.5d);
+        }
+        if (this.w.getScene().getCurrentInput().contains("DOWN")) {
+        	deltaY = -(timeStepNS*2.5d);
+        }	 
+        if(deltaY == 0.0d) {
+        	deltaY =  timeStepNS/2.0d;  
+        }
+        Point2D scaledVelocity = new Point2D(deltaX, deltaY);
  
         this.entityPosition.moveBy(scaledVelocity);
 	}

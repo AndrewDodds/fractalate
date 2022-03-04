@@ -11,9 +11,11 @@ import javafx.scene.text.Font;
 public class ScoreCard implements UpdatableRenderable {
 
 	private Point2D screenSize;
+	private World w;
 	
-	public ScoreCard(Point2D theScreenSize)  {
+	public ScoreCard(Point2D theScreenSize, World world)  {
 		screenSize = theScreenSize;
+		w = world;
 	}
 
 	@Override
@@ -33,7 +35,9 @@ public class ScoreCard implements UpdatableRenderable {
 		gc.setFill(bgColour);
 		
         gc.fillRect(0.0d,  screenSize.getY()-(FracConstants.TILE_SIZE / 2.0d),  screenSize.getX(),  screenSize.getY());
-		gc.strokeText("Current coord: "+refPos.toString(), FracConstants.TILE_SIZE / 2.0d, screenSize.getY()-(FracConstants.TILE_SIZE / 4.0d));
+		//gc.strokeText("Current coord: "+refPos.toString(), FracConstants.TILE_SIZE / 2.0d, screenSize.getY()-(FracConstants.TILE_SIZE / 4.0d));
+		gc.strokeText("Current input: "+this.w.getScene().getCurrentInput(), FracConstants.TILE_SIZE / 2.0d, screenSize.getY()-(FracConstants.TILE_SIZE / 4.0d));
+
 		// TODO add in coordinate of mouse, draw at mouse.
 	}
 

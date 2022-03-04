@@ -34,6 +34,7 @@ public class World  {
 	
 	private Point2D mousePos = new Point2D(0.0d, 0.0d);
 	private MainGameScene scene;
+	private Player player;
 
 	public World(double difficulty, long seed) {
 		tiles = new ArrayList<>();
@@ -50,7 +51,8 @@ public class World  {
 	}
 	
 	private void addPlayerEntity() {
-		entities.add(new Player(0, 1, (int) FracConstants.NUM_LAYERS, FracConstants.NUM_LAYERS + 0.1d, this));
+		player = new Player(0, 1, (int) FracConstants.NUM_LAYERS, FracConstants.NUM_LAYERS + 0.1d, this);
+		entities.add(player);
 		
 	}
 
@@ -63,17 +65,15 @@ public class World  {
 		myCoord.moveBy(delta);
 	}
 	
-	
 	private void checkAndAddActiveTile(double height, int xPos, int yPos, int zPos, double difficulty) {
 		if((height <  (zPos+1) && height <= FracConstants.GROUND_LEVEL_LAYER) && (RandomHolder.getRandom().nextDouble() < (FracConstants.ACTIVE_TILE_FREQ*difficulty))) {
 			// This is the 'top' of a stack		
-			tiles.add(new ActiveTile(xPos, yPos, zPos+1,  height+0.1d, new ActiveEntityRec(difficulty)));
+			tiles.add(new ActiveTile(xPos, yPos, zPos+1,  height+0.1d, new ActiveEntityRec(difficulty), this));
 		}							
 		
 	}
 	
 	private void buildTiles(double[][] heightArray, PatchInfoRec[][] colArray, double difficulty) {
-		
 		// Create all tiles - start from the bottom, so ArrayList ordering should(!) give us free z buffering
 		// And here we build the list of tiles from the bottom up, so we don't need to worry about Z buffering later
 		tiles = new ArrayList<>();
@@ -82,7 +82,7 @@ public class World  {
 				for(int h = 1; h<=FracConstants.NUM_LAYERS; h++) {
 					if(heightArray[i][j] > h) {
 						double high = (heightArray[i][j] > h + 1) ? h : heightArray[i][j];
-						tiles.add( new Tile(i-(xSize/2), j, h, high, colArray[i][j]));
+						tiles.add( new Tile(i-(xSize/2), j, h, high, colArray[i][j], this));
 						checkAndAddActiveTile(heightArray[i][j], i-(xSize/2), j, h, difficulty);
 					}
 					else {
@@ -109,7 +109,7 @@ public class World  {
 			}
 			Color col2 = new Color(FracConstants.RAINBOWCOLOURS[colIdx2][0],FracConstants.RAINBOWCOLOURS[colIdx2][1],FracConstants.RAINBOWCOLOURS[colIdx2][2], 1.0d);
 			for(int i=0; i<xSize; i++) {
-				backgroundTiles.add( new BackgroundTile(i-(xSize/2), j, col1, col2));
+				backgroundTiles.add( new BackgroundTile(i-(xSize/2), j, col1, col2, this));
 			}
 		}
 	}
@@ -269,5 +269,8 @@ public class World  {
 		return scene;
 	}
 
+	public Player getPlayer() {
+		return player;
+	}
 
 }

@@ -3,21 +3,21 @@ package org.ajd.fractalate.world.elements;
 
 import org.ajd.fractalate.FracConstants;
 import org.ajd.fractalate.world.PatchInfoRec;
+import org.ajd.fractalate.world.World;
 import org.ajd.fractalate.world.util.Coordinate;
 
-import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 
 // Main tile class. 
 public class Tile extends BaseTile {
 	
 	// Constructor. Depth is basically a layer, height an absolute value (used to calculate depth)
-	public Tile(int xpos, int ypos, int depth, double height, PatchInfoRec cRec) {
+	public Tile(int xpos, int ypos, int depth, double height, PatchInfoRec cRec, World w) {
 		if(depth < 1 || depth > FracConstants.NUM_LAYERS) {
 			depth = 1;
 		}
 
-		this.init(xpos, ypos, depth, height);
+		this.init(xpos, ypos, depth, height, w);
 		
 		shapes = cRec.getShapesBuilder().buildShapes(cRec, depthScale, depth);
 	}	
@@ -26,11 +26,11 @@ public class Tile extends BaseTile {
 	// Scalefactor will usually be 1. But we also scale according to depth. This means we can zoom in/out if we want..
 	public void render(GraphicsContext gc, double scaleFactor, Coordinate refPos) {
 						
-		Bounds b = gc.getCanvas().getBoundsInLocal();
+		bounds = gc.getCanvas().getBoundsInLocal();
 
-		Coordinate realCenter = this.centerPos.getScreenCoords(b, refPos, scaleFactor);
+		Coordinate realCenter = this.centerPos.getScreenCoords(bounds, refPos, scaleFactor);
 		
-		if(shouldDisplay(gc.getCanvas().getBoundsInLocal(), realCenter)) {
+		if(shouldDisplay(realCenter)) {
 			
 			shapes.forEach(s ->
 				{s.setCoord(realCenter); 
